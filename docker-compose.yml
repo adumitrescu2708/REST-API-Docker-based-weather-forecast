@@ -1,0 +1,50 @@
+# Dumitrescu Alexandra 343C1 December 2023
+
+version: '3.3'
+
+services:
+  # PostgreSQL database container
+  postgres:
+    container_name: db-postgres
+    image: postgres:14.1-alpine
+    restart: always
+    env_file:
+      - app.env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - dbeaver-net
+      - app-net
+
+  # Flask server container
+  app:
+    container_name: app
+    restart: always
+    depends_on:
+      - postgres
+    build: ./app/
+    ports:
+      - 6000:6000
+    networks:
+      - app-net
+
+  # DBeaver container
+  db_admin:
+    container_name: dbeaver
+    image: dbeaver/cloudbeaver:23.2.5
+    restart: always
+    ports:
+      - 8080:8978
+    networks:
+      - dbeaver-net
+
+
+volumes:
+    db_data:
+
+networks:
+    dbeaver-net:
+    app-net:
+
